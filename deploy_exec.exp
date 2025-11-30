@@ -1,0 +1,24 @@
+#!/usr/bin/expect
+
+set timeout 1200
+set host "194.163.161.196"
+set user "sysadmin"
+set password "***REMOVED-SECRET***"
+set script "setup_server.sh"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect {
+    "password:" { send "$password\r" }
+    timeout { puts "SSH Connection timed out"; exit 1 }
+}
+expect -re {[$#] }
+send "chmod +x $script\r"
+expect -re {[$#] }
+send "./$script\r"
+expect {
+    "Deployment complete!" { puts "Deployment finished successfully" }
+    timeout { puts "Deployment timed out"; exit 1 }
+    eof { puts "Connection closed unexpectedly"; exit 1 }
+}
+expect -re {[$#] }
+send "exit\r"

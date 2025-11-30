@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.gitignore
+*.md
+.env
+.env.local
+npm-debug.log
+.DS_Store
+deploy*.sh
+debug*.sh
+*.exp
+setup_server.sh

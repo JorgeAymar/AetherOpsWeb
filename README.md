@@ -1,6 +1,6 @@
 # AetherOps Admin
 
-**Version 0.2**
+**Version 0.3**
 
 Automated VPS management platform powered by AI. Perfect for startups and digital entrepreneurs who need to manage their Linux Ubuntu environments without a dedicated system administrator.
 
