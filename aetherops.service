@@ -1,0 +1,19 @@
+[Unit]
+Description=AetherOps Admin
+After=network.target
+
+[Service]
+Type=simple
+User=sysadmin
+WorkingDirectory=/opt/aetherops
+Environment=NODE_ENV=production
+Environment=PORT=5001
+ExecStart=/usr/bin/node dist/index.cjs
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=aetherops
+
+[Install]
+WantedBy=multi-user.target

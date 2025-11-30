@@ -2,13 +2,11 @@
 HOST="194.163.161.196"
 USER="sysadmin"
 PASS="***REMOVED-SECRET***"
-DOMAIN="AetherOps.labshub.cc"
 REPO="https://github.com/JorgeAymar/AetherOpsAdmin.git"
 DIR="/opt/docker-aetherops"
 
 run_remote() {
     CMD="$1"
-    echo "Running: $CMD"
     expect -c "
     set timeout 600
     spawn ssh -o StrictHostKeyChecking=no $USER@$HOST \"$CMD\"
@@ -22,23 +20,37 @@ run_remote() {
     "
 }
 
-# 1. Stop PM2 if exists
-run_remote "pm2 delete aetherops || true"
+echo "=== Removing empty directory ==="
+run_remote "echo '$PASS' | sudo -S rm -rf $DIR"
 
-# 2. Create directory with proper permissions
+echo -e "\n=== Creating directory ==="
 run_remote "echo '$PASS' | sudo -S mkdir -p $DIR"
 run_remote "echo '$PASS' | sudo -S chown -R $USER:$USER $DIR"
 
-# 3. Clone or pull repository
-run_remote "if [ -d $DIR/.git ]; then cd $DIR && git pull; else git clone $REPO $DIR; fi"
+echo -e "\n=== Cloning repository ==="
+run_remote "git clone $REPO $DIR"
 
-# 4. Build and start Docker container
-run_remote "cd $DIR && echo '$PASS' | sudo -S docker compose down || true"
-run_remote "cd $DIR && echo '$PASS' | sudo -S docker compose up -d --build"
+echo -e "\n=== Verifying files ==="
+run_remote "ls -la $DIR | head -20"
+run_remote "ls -la $DIR/docker-compose.yml"
+run_remote "ls -la $DIR/Dockerfile"
 
-# 5. Wait and check
-run_remote "sleep 10"
+echo -e "\n=== Building Docker image ==="
+run_remote "cd $DIR && echo '$PASS' | sudo -S docker compose build"
+
+echo -e "\n=== Starting container ==="
+run_remote "cd $DIR && echo '$PASS' | sudo -S docker compose up -d"
+
+echo -e "\n=== Waiting for container to start ==="
+run_remote "sleep 15"
+
+echo -e "\n=== Checking container status ==="
 run_remote "cd $DIR && echo '$PASS' | sudo -S docker compose ps"
-run_remote "curl -v http://127.0.0.1:5001"
 
-echo "Docker Deployment Finished!"
+echo -e "\n=== Checking logs ==="
+run_remote "cd $DIR && echo '$PASS' | sudo -S docker compose logs --tail=30"
+
+echo -e "\n=== Testing application ==="
+run_remote "curl -I http://127.0.0.1:5001"
+
+echo -e "\n=== Docker deployment complete! ==="
