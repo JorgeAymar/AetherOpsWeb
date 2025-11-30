@@ -88,7 +88,7 @@ app.use((req, res, next) => {
   httpServer.listen(
     {
       port,
-      host: production ? "0.0.0.0" : "127.0.0.1",
+      host: process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1",
 
     },
     () => {
