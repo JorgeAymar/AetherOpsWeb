@@ -200,7 +200,7 @@ const translations: Record<Language, Translations> = {
             plans: {
                 personal: {
                     name: "Personal",
-                    description: "Perfect for personal projects and hobbyists.",
+                    description: "Perfect for personal projects. Free for 15 days.",
                     features: ["1 VPS Instance", "Basic AI Crew", "1-Click Deploy", "Community Support", "99.9% Uptime SLA"],
                 },
                 professional: {
@@ -337,7 +337,7 @@ const translations: Record<Language, Translations> = {
             plans: {
                 personal: {
                     name: "Personal",
-                    description: "Perfecto para proyectos personales y aficionados.",
+                    description: "Perfecto para proyectos personales. Gratis por 15 días.",
                     features: ["1 Instancia VPS", "Equipo IA Básico", "Despliegue en 1-Click", "Soporte Comunitario", "99.9% Uptime SLA"],
                 },
                 professional: {
@@ -474,7 +474,7 @@ const translations: Record<Language, Translations> = {
             plans: {
                 personal: {
                     name: "Pessoal",
-                    description: "Perfeito para projetos pessoais e hobbyistas.",
+                    description: "Perfeito para projetos pessoais. Grátis por 15 dias.",
                     features: ["1 Instância VPS", "Equipe IA Básica", "Implantação em 1-Click", "Suporte da Comunidade", "99.9% Uptime SLA"],
                 },
                 professional: {
@@ -611,7 +611,7 @@ const translations: Record<Language, Translations> = {
             plans: {
                 personal: {
                     name: "Personnel",
-                    description: "Parfait pour les projets personnels et les amateurs.",
+                    description: "Parfait pour les projets personnels. Gratuit pendant 15 jours.",
                     features: ["1 Instance VPS", "Équipe IA de Base", "Déploiement en 1 Clic", "Support Communautaire", "99.9% SLA de Disponibilité"],
                 },
                 professional: {

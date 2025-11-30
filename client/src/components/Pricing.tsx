@@ -11,7 +11,7 @@ export default function Pricing() {
     {
       key: 'personal',
       price: "$0",
-      period: "/month",
+      period: "15 days",
       unavailable: ["Autonomous Remediation", "Security Hardening", "Compliance Reports"],
       popular: false,
     },
