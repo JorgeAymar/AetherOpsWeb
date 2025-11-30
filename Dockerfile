@@ -27,7 +27,6 @@ RUN npm ci --only=production
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/client/dist ./client/dist
 
 # Expose the port
 EXPOSE 5001
