@@ -4,7 +4,7 @@ services:
     container_name: aetherops-admin
     restart: always
     ports:
-      - "127.0.0.1:5001:5001"
+      - "5001:5001"
     environment:
       - NODE_ENV=production
       - PORT=5001
