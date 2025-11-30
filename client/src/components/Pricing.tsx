@@ -10,14 +10,14 @@ export default function Pricing() {
   const plans = [
     {
       key: 'personal',
-      price: "$0",
-      period: "15 days",
+      price: "$29",
+      period: "/month",
       unavailable: ["Autonomous Remediation", "Security Hardening", "Compliance Reports"],
       popular: false,
     },
     {
       key: 'professional',
-      price: "$29",
+      price: "$100",
       period: "/month",
       unavailable: ["Compliance Reports", "Dedicated Account Manager"],
       popular: true,
