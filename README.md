@@ -1,6 +1,6 @@
 # AetherOps Admin
 
-**Version 0.3**
+**Version 0.4**
 
 Automated VPS management platform powered by AI. Perfect for startups and digital entrepreneurs who need to manage their Linux Ubuntu environments without a dedicated system administrator.
 
@@ -47,46 +47,64 @@ docker compose up -d --build
 
 ## 🌐 Deployment
 
-### VPS Deployment Steps
+### Strategy: Prebuilt Docker Deployment
 
-1. **Clone the repository**
+Due to build tool compatibility issues in some environments, we use a "prebuilt" strategy where the application is built locally and artifacts are copied into the Docker container.
+
+### Deployment Steps
+
+1. **Build Locally**
    ```bash
-   sudo mkdir -p /opt/docker-aetherops
-   sudo chown -R $USER:$USER /opt/docker-aetherops
-   git clone https://github.com/JorgeAymar/AetherOpsAdmin.git /opt/docker-aetherops
-   cd /opt/docker-aetherops
+   npm install
+   npm run build
    ```
 
-2. **Start the application**
+2. **Package Artifacts**
    ```bash
+   tar -czf deploy.tar.gz dist package.json package-lock.json Dockerfile docker-compose.yml
+   ```
+
+3. **Upload to Server**
+   ```bash
+   scp deploy.tar.gz user@server:/tmp/
+   ```
+
+4. **Deploy on Server**
+   ```bash
+   # Prepare directory
+   sudo mkdir -p /opt/docker-aetherops
+   sudo chown -R $USER:$USER /opt/docker-aetherops
+   cd /opt/docker-aetherops
+
+   # Extract
+   tar -xzf /tmp/deploy.tar.gz
+
+   # Start with Docker Compose
    docker compose up -d --build
    ```
 
-3. **Configure Nginx**
-   Create `/etc/nginx/sites-available/aetherops`:
-   ```nginx
-   server {
-       listen 80;
-       server_name your-domain.com;
+### Nginx Configuration
 
-       location / {
-           proxy_pass http://127.0.0.1:5001;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection 'upgrade';
-           proxy_set_header Host $host;
-           proxy_cache_bypass $http_upgrade;
-       }
-   }
-   ```
+Create `/etc/nginx/sites-available/aetherops.labshub.cc`:
 
-4. **Enable site and SSL**
-   ```bash
-   sudo ln -s /etc/nginx/sites-available/aetherops /etc/nginx/sites-enabled/
-   sudo nginx -t
-   sudo systemctl restart nginx
-   sudo certbot --nginx -d your-domain.com
-   ```
+```nginx
+server {
+    listen 80;
+    server_name aetherops.labshub.cc;
+
+    location / {
+        proxy_pass http://127.0.0.1:5001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
 
 ## 📁 Project Structure
 
@@ -97,6 +115,7 @@ docker compose up -d --build
 │   │   ├── lib/         # i18n and utilities
 │   │   └── assets/      # Images and static files
 ├── server/              # Express backend
+├── dist/                # Compiled assets (production)
 ├── Dockerfile           # Docker configuration
 ├── docker-compose.yml   # Docker Compose setup
 └── package.json         # Dependencies and scripts
