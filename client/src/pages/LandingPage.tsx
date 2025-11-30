@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import Philosophy from "@/components/Philosophy";
 import Features from "@/components/Features";
 import SuccessStories from "@/components/SuccessStories";
-import RequestDemo from "@/components/RequestDemo";
+import Pricing from "@/components/Pricing";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 
@@ -16,7 +16,7 @@ export default function LandingPage() {
         <Philosophy />
         <Features />
         <SuccessStories />
-        <RequestDemo />
+        <Pricing />
         <Testimonials />
       </main>
       <Footer />

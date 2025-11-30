@@ -57,10 +57,10 @@ export default function Navbar() {
             </button>
           ))}
           <Button 
-            onClick={() => scrollToSection("#demo")}
+            onClick={() => scrollToSection("#pricing")}
             className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
           >
-            Request Demo
+            View Pricing
           </Button>
         </div>
 
@@ -93,10 +93,10 @@ export default function Navbar() {
                 </button>
               ))}
               <Button 
-                onClick={() => scrollToSection("#demo")}
+                onClick={() => scrollToSection("#pricing")}
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                Request Demo
+                View Pricing
               </Button>
             </div>
           </motion.div>

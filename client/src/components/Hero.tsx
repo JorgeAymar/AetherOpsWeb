@@ -49,14 +49,15 @@ export default function Hero() {
           <Button 
             size="lg" 
             className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6 h-auto w-full sm:w-auto"
-            onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Request a Demo
+            Get Started
           </Button>
           <Button 
             size="lg" 
             variant="outline" 
             className="border-foreground text-foreground hover:bg-foreground hover:text-background text-lg px-8 py-6 h-auto w-full sm:w-auto transition-all"
+            onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
           >
             View Pricing & Plans
           </Button>
