@@ -3,37 +3,15 @@ services:
     build: .
     container_name: aetherops-app
     restart: always
-    expose:
-      - "5001"
+    ports:
+      - "127.0.0.1:5001:5001"
     environment:
       - NODE_ENV=production
       - PORT=5001
-      - ALLOWED_ORIGIN=${ALLOWED_ORIGIN}
+      - ALLOWED_ORIGIN=${ALLOWED_ORIGIN:-https://aetherops.labshub.cc}
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:5001"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - internal
-
-  nginx:
-    image: nginx:alpine
-    container_name: aetherops-nginx
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/certs:/etc/nginx/certs:ro
-    depends_on:
-      app:
-        condition: service_healthy
-    networks:
-      - internal
-
-networks:
-  internal:
-    driver: bridge
