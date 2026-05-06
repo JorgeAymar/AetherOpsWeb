@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import heroBg from "@assets/generated_images/futuristic_server_room_hero_background_with_abstract_ai_network_elements_in_matte_black_and_gold..png";
+import heroBg from "@assets/images/hero_sailing_boat.jpg";
 import { useLanguage } from "@/lib/i18n";
 
 export default function Hero() {
