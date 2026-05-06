@@ -31,5 +31,10 @@ export async function registerRoutes(
     return res.status(201).json({ message: "Demo request received. Our team will contact you shortly." });
   });
 
+  // 404 for any undefined /api route — prevents SPA fallback from masking missing endpoints
+  app.all("/api/*", (_req: Request, res: Response) => {
+    res.status(404).json({ message: "Not found" });
+  });
+
   return httpServer;
 }

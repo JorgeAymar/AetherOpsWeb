@@ -29,6 +29,11 @@ app.use(
             "style-src": ["'self'", "'unsafe-inline'"],
           },
         },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
   }),
 );
 
