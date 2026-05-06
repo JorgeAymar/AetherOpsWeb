@@ -5,6 +5,7 @@ import Features from "@/components/Features";
 import SuccessStories from "@/components/SuccessStories";
 import Pricing from "@/components/Pricing";
 import Testimonials from "@/components/Testimonials";
+import RequestDemo from "@/components/RequestDemo";
 import Footer from "@/components/Footer";
 
 export default function LandingPage() {
@@ -18,6 +19,7 @@ export default function LandingPage() {
         <SuccessStories />
         <Pricing />
         <Testimonials />
+        <RequestDemo />
       </main>
       <Footer />
     </div>

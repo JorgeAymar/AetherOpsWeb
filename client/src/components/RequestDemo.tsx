@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import bgImage from "@assets/generated_images/dark,_elegant_server_room_background_for_a_form_overlay..png";
 
 const formSchema = z.object({
@@ -27,21 +29,42 @@ const formSchema = z.object({
 
 export default function RequestDemo() {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullName: "",
+      companyName: "",
+      email: "",
+      phone: "",
       fleetSize: "1-10",
       challenge: "High MTTR",
+      comments: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast({
-      title: "Request Received",
-      description: "Our team will confirm your consultation shortly.",
-      action: <CheckCircle2 className="text-primary w-12 h-12" />,
-    });
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    try {
+      await apiRequest("POST", "/api/demo-request", {
+        ...values,
+        date: values.date ? values.date.toISOString() : undefined,
+      });
+      toast({
+        title: "Request Received",
+        description: "Our team will confirm your consultation shortly.",
+        action: <CheckCircle2 className="text-primary w-12 h-12" />,
+      });
+      form.reset();
+    } catch {
+      toast({
+        title: "Submission failed",
+        description: "Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -225,8 +248,8 @@ export default function RequestDemo() {
                 />
 
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Button type="submit" className="w-full sm:w-2/3 bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-lg font-semibold">
-                    Schedule Consultation
+                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-2/3 bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-lg font-semibold">
+                    {isSubmitting ? "Sending..." : "Schedule Consultation"}
                   </Button>
                   <Button type="button" variant="outline" className="w-full sm:w-1/3 border-zinc-300 text-zinc-700 hover:bg-zinc-100 h-12 gap-2">
                     <Phone size={18} /> Call Sales

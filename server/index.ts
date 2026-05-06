@@ -1,4 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -11,6 +14,41 @@ declare module "http" {
     rawBody: unknown;
   }
 }
+
+const isProd = process.env.NODE_ENV === "production";
+
+// In dev, Vite injects inline scripts — disable CSP only for those directives in dev
+app.use(
+  helmet({
+    contentSecurityPolicy: isProd
+      ? undefined
+      : {
+          directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+            "style-src": ["'self'", "'unsafe-inline'"],
+          },
+        },
+  }),
+);
+
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGIN || (isProd ? false : "http://localhost:5000"),
+    credentials: true,
+  }),
+);
+
+// Rate limit only API routes, not static assets
+app.use(
+  "/api",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: isProd ? 100 : 1000,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+);
 
 app.use(
   express.json({
@@ -46,14 +84,11 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (true) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      log(logLine);
+    let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+    if (process.env.NODE_ENV !== "production" && capturedJsonResponse) {
+      logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
     }
+    log(logLine);
   });
 
   next();

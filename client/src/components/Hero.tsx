@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import heroBg from "/Users/jorgesaymar/.gemini/antigravity/brain/2813f8d3-e116-4d97-8534-79654cf80bb9/hero_sailing_calm_1764513530227.png";
+import heroBg from "@assets/generated_images/futuristic_server_room_hero_background_with_abstract_ai_network_elements_in_matte_black_and_gold..png";
 import { useLanguage } from "@/lib/i18n";
 
 export default function Hero() {
