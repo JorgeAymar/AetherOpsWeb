@@ -17,18 +17,30 @@ declare module "http" {
 
 const isProd = process.env.NODE_ENV === "production";
 
-// In dev, Vite injects inline scripts — disable CSP only for those directives in dev
+// Behind nginx (one hop): use X-Forwarded-For for the real client IP (rate limiting, logs)
+app.set("trust proxy", 1);
+app.disable("x-powered-by");
+
+// CSP only in production — Vite dev server injects inline scripts
 app.use(
   helmet({
     contentSecurityPolicy: isProd
-      ? undefined
-      : {
+      ? {
+          useDefaults: true,
           directives: {
-            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-            "style-src": ["'self'", "'unsafe-inline'"],
+            "default-src": ["'self'"],
+            "script-src": ["'self'"],
+            "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            "font-src": ["'self'", "https://fonts.gstatic.com", "data:"],
+            "img-src": ["'self'", "data:", "blob:", "https:"],
+            "connect-src": ["'self'"],
+            "object-src": ["'none'"],
+            "base-uri": ["'self'"],
+            "form-action": ["'self'"],
+            "frame-ancestors": ["'none'"],
           },
-        },
+        }
+      : false,
     hsts: {
       maxAge: 31536000,
       includeSubDomains: true,
@@ -55,15 +67,28 @@ app.use(
   }),
 );
 
+// Stricter limit for the public demo form (anti-spam): 5 submissions per IP per hour
+app.use(
+  "/api/demo-request",
+  rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: isProd ? 5 : 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { message: "Too many requests, please try again later." },
+  }),
+);
+
 app.use(
   express.json({
+    limit: "20kb",
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
   }),
 );
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: "20kb" }));
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -102,12 +127,13 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
+    // Never leak internal error details for 5xx
+    const message = status < 500 && err.expose ? err.message : "Internal Server Error";
+    if (status >= 500) console.error(err);
+    if (res.headersSent) return next(err);
     res.status(status).json({ message });
-    throw err;
   });
 
   // importantly only setup vite in development and after
