@@ -1,16 +1,23 @@
 services:
-  app:
+  aetherops-app:
     build: .
+    image: aetherops-web:latest
     container_name: aetherops-app
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5001:5001"
+      # Host port stays in this VPS's assigned 80xx/81xx range; container listens on 5001 internally.
+      - "127.0.0.1:${HOST_PORT:-8097}:5001"
+    # Optional: only loaded if present (not committed — see .env.example). Secrets like SMTP_* go here.
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       - NODE_ENV=production
       - PORT=5001
       - ALLOWED_ORIGIN=${ALLOWED_ORIGIN:-https://aetherops.labshub.cc}
+      - NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL:-jorge.s.aymar@gmail.com}
+    mem_limit: 512m
+    memswap_limit: 512m
     read_only: true
     tmpfs:
       - /tmp
